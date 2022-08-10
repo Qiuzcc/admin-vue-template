@@ -1,12 +1,12 @@
 'use strict'
-require('./check-versions')()
+require('./check-versions')()         // 检查NodeJS和npm的版本
 
 process.env.NODE_ENV = 'production'
 
-const ora = require('ora')
+const ora = require('ora')            //ora插件，实现node.js 命令行环境的 loading效果， 和显示各种状态的图标等
 const rm = require('rimraf')
 const path = require('path')
-const chalk = require('chalk')
+const chalk = require('chalk')        // 用于在控制台输出带颜色字体的插件
 const webpack = require('webpack')
 const config = require('../config')
 const webpackConfig = require('./webpack.prod.conf')
@@ -14,6 +14,7 @@ const webpackConfig = require('./webpack.prod.conf')
 const spinner = ora('building for production...')
 spinner.start()
 
+// rimraf插件，每次启动编译或者打包之前，先把整个dist文件夹删除，然后再重新生成dist
 rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
   if (err) throw err
   webpack(webpackConfig, (err, stats) => {

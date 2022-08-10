@@ -41,7 +41,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       sourceMap: config.build.productionSourceMap,
       parallel: true
     }),
-    // extract css into its own file
+    // extract css into its own file，抽离css文件
     new ExtractTextPlugin({
       filename: utils.assetsPath('css/[name].[contenthash].css'),
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
@@ -119,6 +119,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   ]
 })
 
+// gzip模式下需要引入compression插件进行压缩
 if (config.build.productionGzip) {
   const CompressionWebpackPlugin = require('compression-webpack-plugin')
 

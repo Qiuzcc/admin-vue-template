@@ -2,22 +2,26 @@
 const utils = require('./utils')
 const webpack = require('webpack')
 const config = require('../config')
-const merge = require('webpack-merge')
+const merge = require('webpack-merge')    // 一个可以合并数组和对象的插件
 const path = require('path')
 const baseWebpackConfig = require('./webpack.base.conf')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')    // 一个用于生成HTML文件并自动注入依赖文件（link/script）的webpack插件
+const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')  // 用于更友好地输出webpack的警告、错误等信息
 const portfinder = require('portfinder')
 
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
+// 合并基础的webpack配置
 const devWebpackConfig = merge(baseWebpackConfig, {
+
+  // 配置样式文件的处理规则，使用styleLoaders
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
   },
-  // cheap-module-eval-source-map is faster for development
+  
+  // 配置Source Maps。在开发中使用cheap-module-eval-source-map更快
   devtool: config.dev.devtool,
 
   // these devServer options should be customized in /config/index.js
@@ -44,13 +48,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       poll: config.dev.poll,
     }
   },
+
+  // 配置webpack插件
   plugins: [
     new webpack.DefinePlugin({
       'process.env': require('../config/dev.env')
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
-    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.NamedModulesPlugin(),   // HMR shows correct file names in console on update.
+    new webpack.NoEmitOnErrorsPlugin(), // 后页面中的报错不会阻塞，但是会在编译结束后报错
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: 'index.html',
