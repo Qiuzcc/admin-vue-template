@@ -8,6 +8,9 @@ const vueLoaderConfig = require('./vue-loader.conf')
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
+// Node.js 中，__dirname 总是指向被执行 js 文件的绝对路径，所以这里就是/build目录
+// path.join的作用是把所有参数依次连接成一个路径
+// 所以resolve(dir)返回的结果就是/public/../dir，相当于/dir，dir作为根目录下第一级目录
 
 
 module.exports = {

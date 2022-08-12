@@ -50,7 +50,7 @@ export default {
             }
         }
     },
-    mouted(){
+    mounted(){
         console.log(this.$listeners)    //查看父级添加的事件函数，打包时删除掉这个代码
     }
 }

@@ -2,7 +2,6 @@ import Vue from 'vue'
 import SvgIcon from '@/components/SvgIcon'
 
 Vue.component('svg-icon', SvgIcon)
-    // 疑问：在这里引入SvgICon的目的是什么？这里并没有使用它
 
 const req = require.context('./svg', false, /\.svg$/)
 const requireAll = requireContext => requireContext.keys().map(requireContext)

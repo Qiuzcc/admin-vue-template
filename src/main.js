@@ -13,7 +13,8 @@ import router from './router'
 import store from './store'
 
 import '@/icons'
-// import '@/permission' //权限控制
+import '@/permission'       //权限控制
+import '../mock-simple'     //引入模拟数据源
 
 /**
  * If you don't want to use mock-server
@@ -24,14 +25,14 @@ import '@/icons'
  * please remove it before going online ! ! !
  * 生产环境目前使用MockJs进行模拟
  */
-if (process.env.NODE_ENV === 'production') {
-    const { mockXHR } = require('../mock')
-    mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//     const { mockXHR } = require('../mock')
+//     mockXHR()
+// }
 
 Vue.use(ElementUI)
-    // 如果要设置英文版，按如下设置
-    // Vue.use(ElementUI,{locale})
+// 如果要设置英文版，按如下设置
+// Vue.use(ElementUI,{locale})
 
 Vue.config.productionTip = process.env.NODE_ENV === 'production'
 
