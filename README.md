@@ -11,7 +11,9 @@
 
 ## 简介
 
-第一遍学习vue-admin-template项目，在尝试复现的过程中对源码进行研究
+第一遍学习vue-admin-template项目，在尝试复现的过程中对源码进行研究。
+
+在探究之后，从零复现了一次代码，详见：[ 学习完一遍之后，动手从零开始搭建vue-admin-template项目，记录搭建过程 (github.com)](https://github.com/Qiuzcc/my-vue-admin-template)
 
 ## 项目结构解析
 
