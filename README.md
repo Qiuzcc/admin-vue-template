@@ -1,61 +1,64 @@
-## VueAdmin项目解读
+# vue-admin-template项目
+
+## 目录
+
+- 简介
+- 项目结构解析
+- package.json解读
+- 第三方模块简介
+- 问题合集
+
+## 简介
+
+第一遍学习vue-admin-template项目，在尝试复现的过程中对源码进行研究
+
+## 项目结构解析
 
 ```
-├── build                      # 构建相关
-├── mock                       # 项目mock 模拟数据
-├── plop-templates             # 基本模板
-├── public                     # 静态资源
-│   │── favicon.ico            # favicon图标
-│   └── index.html             # html模板
-├── src                        # 源代码
-│   ├── api                    # 所有请求
-│   ├── assets                 # 主题 字体等静态资源
-│   ├── components             # 全局公用组件
-│   ├── directive              # 全局指令
-│   ├── filters                # 全局 filter
-│   ├── icons                  # 项目所有 svg icons
-│   ├── lang                   # 国际化 language
-│   ├── layout                 # 全局 layout
-│   ├── router                 # 路由
-│   ├── store                  # 全局 store管理
-│   ├── styles                 # 全局样式
-│   ├── utils                  # 全局公用方法
-│   ├── vendor                 # 公用vendor
-│   ├── views                  # views 所有页面
-│   ├── App.vue                # 入口页面
-│   ├── main.js                # 入口文件 加载组件 初始化等
-│   └── permission.js          # 权限管理
-├── tests                      # 测试
-├── .env.xxx                   # 环境变量配置
-├── .eslintrc.js               # eslint 配置项
-├── .babelrc                   # babel-loader 配置
-├── .travis.yml                # 自动化CI配置
-├── vue.config.js              # vue-cli 配置
-├── postcss.config.js          # postcss 配置
-└── package.json               # package.json
+vue-admin                         
+├─ .babelrc                       //babel-loader 配置
+├─ .editorconfig                  //定义项目的编码规范，编辑器的行为会与.editorconfig 文件中定义的一致，并且其优先级比编辑器自身的设置要高
+├─ .postcssrc.js                  //postcss 配置
+├─ build                          
+│  ├─ build.js                    //构建文件
+│  ├─ check-versions.js           //检查NodeJS和npm的版本
+│  ├─ logo.png                    
+│  ├─ utils.js                    //build文件夹下的一些公用工具函数		
+│  ├─ vue-loader.conf.js          //
+│  ├─ webpack.base.conf.js        //构建的基础配置
+│  ├─ webpack.dev.conf.js         //开发环境下的构建配置
+│  └─ webpack.prod.conf.js        //生产环境下的构建配置
+├─ config                         
+│  ├─ dev.env.js                  //设置开发环境的环境变量
+│  ├─ index.js                    //main project config
+│  └─ prod.env.js                 //设置生产环境的环境变量
+├─ index.html                     //html模板
+├─ mock                           //使用mockjs搭建的服务器（开发环境）、修改的XHR实例（生产环境）
+├─ mock-simple                    //自定义简单的mockjs函数（一开始没读懂/mock的代码，先用简单的用法模拟了数据）
+├─ package-lock.json              //对应node_modules下的目录
+├─ package.json                   
+├─ README.md                      
+├─ src                            
+│  ├─ api                         //直接与后端交互的api函数
+│  ├─ App.vue                     //入口页面
+│  ├─ assets                      //静态资源
+│  ├─ components                  //全局组件
+│  ├─ icons                       //项目所有 svg icons，注册全局svg组件
+│  ├─ layout                      //布局组件
+│  ├─ main.js                     //入口文件 加载组件 初始化等
+│  ├─ permission.js               //权限管理，前置导航守卫
+│  ├─ router                      //全局路由
+│  ├─ settings.js                 //项目功能自定义设置
+│  ├─ store                       //全局 store管理
+│  ├─ styles                      //全局样式
+│  ├─ utils                       //全局公用方法
+│  └─ views                       //views 所有路由页面，router-view
+└─ static                         //
 ```
 
-项目完成度
+因为是接触的第一个比较完整的Vue项目，所以对于项目结构完全不了解，也不了解不同CLI生成的项目结构之间的差异。这个项目案例是应该是使用CLI 4.x版本创建的，而我仿写的时候应该使用CLI 3.x版本创建的，所以在项目结构上存在较大的差异。比如前者创建的项目没有了/build和/config两个文件夹，而是改用一个.vue.config.js文件来配置webpack；环境变量是通过.env.xxx来配置。而在后者的项目结构中并没有这些文件，而是在/build和/config两个文件夹里面设置。所以一开始遇到的问题和困难也比较多。为此也特地去花时间分别探究了不同版本CLI的项目结构。
 
-| 文件（目录）   | 主要用途                                                     | 完成度 |
-| -------------- | ------------------------------------------------------------ | ------ |
-| **api**        | user.js，调用src/utils/request文件中的request对象，发送登陆、登出、获取用户信息请求<br />table.js，调用request对象（同上），发送获取table列表数据的请求 |        |
-| **components** | 3个全局公用组件：面包屑导航、汉堡包按钮、图标组件            | ✓      |
-| **icons**      | /svg，11个svg图标文件<br />index.js，注册全局图标组件，引入以上11个svg文件<br />svg.yml，用途未知 | ✓      |
-| **layout**     | /components，创建布局3组件：Sidebar、Navbar、AppMain<br />/mixin，ResizeHandler，窗口大小变化处理器？<br />index.vue，集成3个组件，形成页面完整布局？ | ✓      |
-| **router**     | 全局路由                                                     | ✓      |
-| **store**      | /modules，3个js文件：app、user、settings，分成3个独立模块，<br />对应3个独立的store对象，分别管理页面参数、用户状态、个性化参数<br />getters.js，sidebar、device、token、avatar、name的数据获取接口<br />index.js，集成以上2部分，导出一个store对象 | ✓      |
-| **styles**     | 定义全局样式                                                 | ✓      |
-| **utils**      | 定义全局工具函数<br />auth.js，通过cookie保存token<br />get-page-title.js，获取页面标题<br />request.js，定义axios实例拦截器<br />validate.js，验证用户名、地址是否为外链<br />index.js，2个时间格式化函数、1个url参数转对象函数 | ✓      |
-| **views**      | 导航菜单对应的内容，即AppMain布局部分里面的内容              | ✓      |
-| App.vue        | 入口页面                                                     | ✓      |
-| main.js        | 入口文件，加载组件、初始化                                   | ✓      |
-| permission.js  | 页面导航的权限管理，加载了1个进度条组件                      | ✓      |
-| setting.js     | 参数设置，fixedHeader、sidebarLogo和title                    | ✓      |
-
-初始化项目的命令：`vue init webpack 项目名`
-
-### 一、package.json
+## package.json解读
 
 ```json
 {
@@ -67,15 +70,12 @@
     "scripts": {},			//指定了运行脚本命令的npm命令行缩写,即npm run + 快捷名
     "dependencies": {},		//项目运行所依赖的模块
     "devDependencies": {},	//开发所依赖的模块
-    "config":{},			//用于向环境变量输出值。
     "engines": { },			//指明了该项目所需要的node.js版本
     "browserslist": []		//用以兼容各种浏览器
 }
 ```
 
-
-
-### 二、模块简介
+## 第三方模块简介
 
 | 模块           | 作用                                                         |
 | -------------- | ------------------------------------------------------------ |
@@ -88,163 +88,37 @@
 | bodyParser     | 处理用户post请求提交的数据，把数据保存在req.body中。以一个对象的形式提供给服务器，方便进行后续的处理 |
 | path-to-regexp | 一个对URL进行解析的模块，支持正则表达式验证、匹配、反向解析  |
 
+## 项目技术点
 
+#### 1、页面权限
 
-### 三、webpack配置
+判断页面权限的工作方式，前置导航守卫，permission.js
 
-|           | 作用            | 配置位置                      |
-| --------- | --------------- | ----------------------------- |
-| `@`定位符 | 替代`src`路径名 | `/build/webpack.base.conf.js` |
-|           |                 |                               |
-|           |                 |                               |
+添加导航守卫beforeEach()，点击每个导航之后，跳转路由之前，判断cookie中是否已经有token（登陆成功之后，将后端返回的token保存到cookie和store对象）
 
+#### 2、mock用法
 
+mock模拟api获取数据的工作流程
 
-### 四、问题合集
+项目master分支的mock-server（开发模式）、mock/index.js（生产模式）进行了抽象封装，所以有些部分看了还是看不懂。最后还是直接学习了mock的用法，要用起来还是挺容易的，自己做个demo各个函数、参数试一试就可以了
 
-1. 参照项目修改完main.js之后，无法build项目，报错如下
+后来看懂了，mock-server在webpack中创建了一个http服务器，在开发模式构建时，自动启动http服务器。优势在于可以产生真实的网络请求，能够被浏览器监控，便于调试。而mock修改XHR实例，会让一些底层依赖XMLHTTPRequest的模块出错，而且因为截获了网络请求，所以浏览器无法监听到。
 
-   ```
-   This relative module was not found:
-   
-   * ./styles/index.scss in ./src/main.js
-   ```
+#### 3、布局组件
 
-   原因：缺少解析scss的模块
+本后台项目采取了spa模式，除了登陆、404页面，其它页面一级导航都使用同一个Layout组件，其中侧边导航栏和顶部导航栏是通用的（但是侧导实现比较复杂，顶部面包屑导航是通过`watch $route`动态生成的），AppMain组件通过设置`<router-view>`为子级路由（`children`）预留了插入位置
 
-   解决：安装对应的包，sass-loader和node-sass，其中sass非必需
+教程文档 [ 掘金 (juejin.cn)](https://juejin.cn/post/6844903486241374221) 里提到了【导航】这部分
 
-2. 启动项目时，怎么区分开发、生产、测试环境？
+#### 4、侧边栏导航
 
-   通过脚本命令区分，可以在脚本命令后面加`--mode dev`之类的后缀，也可以直接在package.json文件里的scripts里面定义启动不同模式的简写命令
+侧边栏，根据路由动态生成侧边栏。在侧边栏组件中获取全局路由对象 `$router.options.routes`（即在router/index.js中声明的路由数组，如果动态添加了路由，那么也包括动态路由）。递归处理嵌套的路由数组
 
 
 
-### 五、项目构建流程（一）
+## FAQ
 
-#### 1、编辑packge.json
-
-#### 2、编辑main.js
-
-#### 3、编辑src/icon
-
-1. /svg目录下包含了11个svg文件【✓】
-
-2. svgo.yml【✓】
-
-3. index.js【✓】
-
-   从component引入了一个SvgIcon组件，先创建这个文件，稍后再进行实现
-
-#### 4、实现components/SvgIcon
-
-1. index.js【✓】
-
-   引入了utils下个一个validate文件，先创建这个文件，稍后再实现
-
-#### 5、实现utils/validate.js
-
-导出了两个函数，分别是验证 邮箱/电话地址、用户名有效性的
-
-#### 6、实现utils下的全局工具
-
-1. validate.js【✓】，在上一步已实现
-2. index.js【✓】，注册了3个函数，功能分别是：把时间对象/字符串/数字、转成字符串形式；传入时间戳然后返回格式化的字符串；提取URL参数部分，转换成对象然后返回
-3. auth.js【✓】，引入了js-cookie模块（已经安装），导出三个函数，分别是getToken、setToken、removeToken
-4. get-page-title.js【✓】，导入了src/settings文件，先创建该文件，稍后实现。导出一个函数getPageTitle（如果传入参数，返回参数+settings中的title；如果没有传入参数，返回settings中的title）
-5. request.js【✓】，创建axios实例时用到了一个环境变量`process.env.VUE_APP_BASE_API`，需要看查看是在哪里设置的。**导出一个axios实例，但是目前这个实例不可用（因为缺少后端api服务）**
-
-<blockquote>process对象是一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制<br>process.env 属性会返回包含用户环境的对象</blockquote>
-
-参考文章：[process.env环境变量 - 掘金 (juejin.cn)](https://juejin.cn/post/6972466143445385223)（并没有直接找到设置的地方）
-
-查看项目代码，在根目录下发现了名为`.env.development`的文件，就在这里面设置（但实际上这个设置并没有发挥实际作用，因为本地并没有设置对应的api服务器）
-
-#### 7、实现/stc/settings.js
-
-除了设置默认title，还有两个开关：是否fix the header；是否展示侧边栏logo
-
-#### 8、实现src/permission.js
-
-导入了一个nprogress模块（进度条组件）。添加前置导航守卫，在任何导航前执行，第一，绑定进度条事件、设置页面标题。第二，判断用户对于当前的导航是否有足够权限；如果有，跳过登陆页面并判断用户信息是否加载，没有加载则加载；如果没有权限，重定向到登陆页面
-
-#### 9、App.vue
-
-删除多余的内容，并无新添内容
-
-#### 10、实现mock部分
-
-1. index.js【✓】，从`./`同级目录引入utils、user、table，先创建，稍后实现。里面的逻辑有点看不太懂，还好有完善的文档：[Mock Data | vue-element-admin (panjiachen.github.io)](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/mock-api.html)
-2. utils.js【✓】，传入url字符串，返回url参数对象，和`src/utils/index.js`中的param2Obj一致
-3. user.js【✓】，导出3个模拟api，分别对应登陆、获取用户信息、登出
-4. table.js【✓】，使用mock生成了30份随机数据，导出模拟api`BASE_API/vue-admin-template/table/list`，get请求返回模拟数据
-5. mock-server.js【】，导入了5个模块，分别是：chokidar、bodyParser、chalk、path、mockjs，因为目前只是在开发环境下使用到该文件，所以其中一些模块安装到开发依赖项中即可。额外安装了chokidar、bodyParser、path三个包。**具体函数逻辑并木有看懂**
-
-在官方文档[Mock Data | vue-element-admin (panjiachen.github.io)](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/mock-api.html#移除)中提到：`mock-server`只会在开发环境中使用，线上生产环境目前使用`MockJs`进行模拟。如果不需要请移除。所以**实际上在开发环境下使用的只有mock-server.js这个文件**
-
-
-
-### 六、项目构建流程（二）
-
-在编辑mock部分的时候，一些配置如`vue.config.js`、`.env.development`等，感觉与使用`vue init webpack`创建的项目结构格格不入，担心会因此造成许多麻烦的bug，所以决定放弃使用mock部分，后续由自己来实现api，或者使用Express、或者学习使用mock
-
-#### 1、实现router/index.js【✓】
-
-引入了src/layout，先实现它。（然后就，做到了第4步）
-
-引入了/views目录下的组件，先创建这些文件，稍后再实现
-
-#### 2、实现src/loyout
-
-1. /component目录【✓】，从`@/components`目录下导入了Breadcrumb、Hamburger，先创建它们，稍后实现。在该目录下实现侧边导航栏(Sidebar)、面包屑导航(Navbar)、页面主体(AppMain)三个组件
-2. /mixin目录【✓】，创建了一个resizeHandler.js文件，看起来是处理设备切换时的菜单结构变化的
-3. index.vue【✓】，导入component目录下的3个组件，导入mixin目录下的js文件，创建后台布局框架
-
-#### 3、实现src/components
-
-实现src/components目录下的Breadcrumb和Hamburger
-
-1. /Breadcrumb【✓】，创建index.vue，面包屑导航
-2. /Hamburger【✓】，切换侧边导航栏展开/隐藏的按钮，因其形状为三条横线，类似汉堡包而得名
-
-#### 4、实现store
-
-1. index.js【✓】，导入getters、和/module目录下的模块，这里没有使用严格模式，没有使用mutation，导出的store对象里面使用了modules属性
-2. getters.js【✓】，定义了获取sidebar、device、token、avatar、name的函数（都是通过属性方式获取）
-3. /modules【✓】，app.js，切换侧边导航栏状态，切换设备类型。setings.js，修改fixedHeader、是否展示logo。user.js，引入了/api/user（先创建后实现），处理用户登陆、登出的逻辑、登陆后自动获取用户信息的逻辑。**这里采用了“不同功能模块、不同store对象”的方式，目的应该是为了降低项目耦合度**
-
-#### 5、实现src/views
-
-#### 6、实现src/api
-
-### 七、项目构建流程（三）
-
-至此，项目主体构建完毕，现存的问题是mock模块无法使用（没有顺利实现、涉及到项目配置的问题），所以问题集中在请求api这里。
-
-查看api目录下的2个文件，它们的请求都是通过utils/request.js发出去的，真正访问api的是request.js文件，它里面使用到了`process.env.VUE_APP_BASE_API`这个环境变量，为了搞清楚vue-cli 2.x的环境变量是在哪里定义的，花了半天的时间研究了vue-cli 2.x构建的项目结构，着重研究了build和config目录下的各个文件用途。
-
-vue-cli 2.x的环境变量应该定义在config目录下的dev.env.js文件里，定义方式与@vue/cli 的语法规则还不一样，需要使用`key:value`的形式，同时字符串需要使用双重引号`'""'`。至于VUE_APP_这个前缀应该是@vue/cli 里面的规则，目的是让环境变量能够让webpack的definePlugin编译进浏览器中也能访问使用，详见：[模式和环境变量 | Vue CLI (vuejs.org)](https://cli.vuejs.org/zh/guide/mode-and-env.html#环境变量)
-
-下面总结出目前用到的api
-
-生产环境下：BASE_API 为：/prod-api      开发环境下：BASE_API 为：/dev-api
-
-| api                                     | 发送方           | 用途          |
-| --------------------------------------- | ---------------- | ------------- |
-| BASE_API//vue-admin-template/table/list | getList(params)  | 获取table数据 |
-| BASE_API/vue-admin-template/user/login  | login(*data*)    | 提交登陆信息  |
-| BASE_API/vue-admin-template/user/info   | getInfo(*token*) | 获取用户信息  |
-| BASE_API/vue-admin-template/user/logout | logout()         | 提交登出请求  |
-
-目前遇到一个新的问题：项目里面是怎么用到mock这个模块的？在main.js里面有一段：
-
-<img src="https://qiuzcc-typora-images.oss-cn-shenzhen.aliyuncs.com/images/2022/202208122349647.png" alt="image-20220810150314955" style="zoom:50%;" />
-
-那么是否可以理解为只有在生产环境下才使用了mock模块，而在开发环境下啥也没有？
-
-经过后来查看文档得知，在开发模式运行项目时，会同时启动mock-server.js服务，作为一个服务器来提供模拟数据（支持热重载）
-
-### 八、FAQ
+项目过程中遇到的一些通用性的常见问题
 
 #### 1、vue-cli版本
 
@@ -522,38 +396,107 @@ Mock.mock('/vue-admin-template/user/login','post',function(options){
 
 
 
-### 九、项目技术点
+#### 10、项目文件夹（/src下） 划分的规范 ？
 
-#### 1、页面权限
+- 路由页面（router-view）—— views / pages
+- 零散的全局组件 —— components
+- 全局通用的布局组件 —— layout
+- api交互函数 —— api
+- 全局公用的工具函数 —— utils
+- 全局样式 —— styles
 
-判断页面权限的工作方式，导航守卫。
+#### 11、文件命名格式规范 ？
 
-添加导航守卫beforeEach()，点击每个导航之后，跳转路由之前，判断cookie中是否已经有token（登陆成功之后，将后端返回的token保存到cookie和store对象）
+- 所有文件夹 —— 小写 或者 横线连接（kebab-case）
 
+- 单文件组件名 —— 大写开头（PascalCase）或者 横线连接 ，二选一，但是始终只用一种格式，（index.vue除外，纯小写）
 
+- 应用特定样式的基础组件（如按钮） —— 全部统一以一个特定的前缀开头，如Base、App、V
 
-#### 2、mock用法
+  ```
+  components/
+  |- BaseButton.vue
+  |- BaseTable.vue
+  |- BaseIcon.vue
+  ```
 
-mock模拟api获取数据的工作流程
+- 紧密耦合度组件名（只在父组件的场景下使用）—— 以父组件名作为前缀
 
-项目master分支的mock-server（开发模式）、mock/index.js（生产模式）进行了抽象封装，所以有些部分看了还是看不懂。最后还是直接学习了mock的用法，要用起来还是挺容易的，自己做个demo各个函数、参数试一试就可以了
+  ```
+  components/
+  |- TodoList.vue
+  |- TodoListItem.vue
+  |- TodoListItemButton.vue
+  ```
 
+  像本项目中，把所有紧密耦合的子组件放在同一个目录下，也是一种方式
 
+- 组件名中的单词顺序 —— 一般化描述单词开头，描述性修饰词结尾
 
-#### 3、布局组件
+  ```
+  components/
+  |- SearchButtonClear.vue
+  |- SearchButtonRun.vue
+  |- SearchInputQuery.vue
+  ```
 
-本后台项目采取了spa模式，除了登陆、404页面，其它页面一级导航都使用同一个Layout组件，其中侧边导航栏和顶部导航栏是通用的（但是侧导实现比较复杂，顶部面包屑导航是通过`watch $route`动态生成的），AppMain组件通过设置`<router-view>`为子级路由（`children`）预留了插入位置（但是嵌套是怎么实现的呢？这个还没搞懂）
+- template模板中的组件名 —— 用PascalCase，尽管同时也支持kebab-case，以及最后在DOM中会被转换成kebab-case
 
-教程文档 [ 掘金 (juejin.cn)](https://juejin.cn/post/6844903486241374221) 里提到了【导航】这部分
+  ```
+  <MyComponent/>
+  ```
 
+- .js文件中的组件名（即全局注册组件）—— 用PascalCase
 
+- prop参数名 —— 声明时，用驼峰式（camelCase）；在template中，用kebab-case
 
-#### 4、重构组件
+  ```javascript
+  props: {
+    greetingText: String
+  }
+  ```
 
-侧边栏，根据路由动态生成侧边栏
+  ```html
+  <WelcomeMessage greeting-text="hi"/>
+  ```
 
+  **问题：在子组件（即跟props同个文件中）的template中应该怎么用它？**
 
+#### 12、.vue文件中template标签的规范
 
-#### 5、动态添加路由
+没有内容的空元素，使用自闭合标签（但是不要在html中这么写）
 
-（vue-admin-template项目中没有涉及）
+```
+<MyComponent/>
+```
+
+#### 13、参照项目修改完main.js之后，无法build项目，报错如下
+
+```
+This relative module was not found:
+
+* ./styles/index.scss in ./src/main.js
+```
+
+原因：缺少解析scss的模块
+
+解决：安装对应的包，sass-loader和node-sass，其中sass非必需
+
+#### 14、启动项目时，怎么区分开发、生产、测试环境？
+
+通过脚本命令区分，可以在脚本命令后面加`--mode dev`之类的后缀，也可以直接在package.json文件里的scripts里面定义启动不同模式的简写命令
+
+#### 15、代码中`process.env.VUE_APP_BASE_API`这种`process.env.`加后缀的变量在哪里设置？是怎么读取到变量的？
+
+<blockquote>process对象是一个全局变量，提供了有关当前 Node.js 进程的信息并对其进行控制<br>process.env 属性会返回包含用户环境的对象</blockquote>
+
+参考文章：[process.env环境变量 - 掘金 (juejin.cn)](https://juejin.cn/post/6972466143445385223)
+
+设置在/config/xx.env.js 中设置，CLI 4.x版本的项目在项目根目录下的.env.xx.js文件中设置（如果不存在，新建即可）
+
+参考文章：[模式和环境变量 | Vue CLI (vuejs.org)](https://cli.vuejs.org/zh/guide/mode-and-env.html#环境变量)
+
+#### 16、Mock的用法
+
+Mock文档：[Mock Data | vue-element-admin (panjiachen.github.io)](https://panjiachen.github.io/vue-element-admin-site/zh/guide/essentials/mock-api.html
+
