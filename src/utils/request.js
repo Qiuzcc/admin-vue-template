@@ -31,22 +31,12 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
+    // 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
+    // 如通过xmlhttprequest 状态码标识 逻辑可写在下面error中
+    // If you want to get http information such as headers or status
+    // Please return  response => response
+    // 通过自定义状态码来识别请求状态，这里只是一个例子，你也可以通过http状态码来判断状态
 
-    /**
-    * 下面的注释为通过response自定义code来标示请求状态，当code返回如下情况为权限有问题，登出并返回到登录页
-    * 如通过xmlhttprequest 状态码标识 逻辑可写在下面error中
-    */
-   
-    /**
-     * If you want to get http information such as headers or status
-     * Please return  response => response
-     */
-
-    /**
-     * Determine the request status by custom code
-     * Here is just an example
-     * You can also judge the status by HTTP Status Code
-     */
     response => {
         const res = response.data
 

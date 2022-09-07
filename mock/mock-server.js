@@ -4,8 +4,8 @@ const chalk = require('chalk')
 const path = require('path')
 const Mock = require('mockjs')
 
+// process.cwd() 是当前执行node命令时候的文件夹地址
 const mockDir = path.join(process.cwd(), 'mock')
-    // process.cwd() 是当前执行node命令时候的文件夹地址
 
 function registerRoutes(app) {
     let mockLastIndex

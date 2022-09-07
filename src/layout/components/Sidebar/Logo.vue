@@ -1,6 +1,3 @@
-// 菜单栏的可折叠选项，如果折叠，那么只显示Logo（如果没有Logo，则显示标题）
-// 如果展开，显示Logo和标题
-
 <template>
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
